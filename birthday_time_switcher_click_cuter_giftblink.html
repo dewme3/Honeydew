@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birthday Time Switcher Click</title>
+  <style>
+    :root {
+      --yellow: #fff176;
+      --yellow-soft: #fff9b8;
+      --white-soft: #fffde8;
+      --shadow-pink: rgba(255, 104, 170, 0.55);
+      --shadow-purple: rgba(107, 69, 184, 0.52);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family:
+        "Cafe24 Ssurround",
+        "Cafe24Ssurround",
+        "Ownglyph",
+        "Jua",
+        "Gaegu",
+        "Poor Story",
+        "Comic Sans MS",
+        "Apple SD Gothic Neo",
+        "Malgun Gothic",
+        sans-serif;
+      color: var(--yellow);
+      transition: background 0.55s ease;
+      cursor: none;
+      user-select: none;
+    }
+
+    body.day11 {
+      background:
+        radial-gradient(circle at 16% 18%, rgba(255,255,255,0.42), transparent 17%),
+        radial-gradient(circle at 82% 23%, rgba(255,255,255,0.34), transparent 14%),
+        radial-gradient(circle at 76% 78%, rgba(255,241,118,0.36), transparent 20%),
+        linear-gradient(135deg, #ff8fc7, #ffb6d9 48%, #ffd6e9);
+      --main-shadow: var(--shadow-pink);
+      --buddy-color: #ffd957;
+      --accent: #ff68aa;
+    }
+
+    body.day12 {
+      background:
+        radial-gradient(circle at 18% 16%, rgba(255,255,255,0.46), transparent 18%),
+        radial-gradient(circle at 84% 26%, rgba(255,255,255,0.38), transparent 15%),
+        radial-gradient(circle at 76% 78%, rgba(255,241,118,0.22), transparent 20%),
+        linear-gradient(135deg, #b9a7ff, #d7c7ff 50%, #efe8ff);
+      --main-shadow: var(--shadow-purple);
+      --buddy-color: #d8c6ff;
+      --accent: #6b45b8;
+    }
+
+    .wrap {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5vw;
+      position: relative;
+    }
+
+    .label {
+      font-size: clamp(24px, 3vw, 56px);
+      letter-spacing: 0.11em;
+      color: var(--white-soft);
+      margin-bottom: 2vh;
+      text-shadow:
+        0 4px 0 var(--main-shadow),
+        0 0 18px rgba(255, 255, 255, 0.55);
+      z-index: 5;
+    }
+
+    #clock {
+      font-size: clamp(58px, 10.5vw, 180px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: 0.01em;
+      color: var(--yellow);
+      -webkit-text-stroke: clamp(1px, 0.16vw, 3px) rgba(255,255,255,0.42);
+      text-shadow:
+        0 7px 0 var(--main-shadow),
+        0 0 26px rgba(255, 255, 255, 0.72);
+      white-space: nowrap;
+      z-index: 5;
+      transition: transform 0.25s ease;
+    }
+
+    .message {
+      margin-top: 4vh;
+      font-size: clamp(30px, 4.8vw, 84px);
+      font-weight: 900;
+      color: var(--yellow-soft);
+      line-height: 1.22;
+      text-shadow:
+        0 5px 0 var(--main-shadow),
+        0 0 18px rgba(255, 255, 255, 0.62);
+      z-index: 5;
+      min-height: 2.5em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .heart {
+      position: absolute;
+      inset: auto 0 5vh 0;
+      font-size: clamp(22px, 2.7vw, 46px);
+      color: #fffde0;
+      opacity: 0.98;
+      text-shadow: 0 3px 0 var(--main-shadow);
+      z-index: 5;
+    }
+
+    .bubble {
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.30);
+      box-shadow: inset 0 0 18px rgba(255,255,255,0.35);
+      animation: floaty 4s infinite ease-in-out;
+    }
+
+    .b1 { width: 70px; height: 70px; top: 12%; left: 8%; animation-delay: 0s; }
+    .b2 { width: 42px; height: 42px; top: 22%; right: 11%; animation-delay: 0.7s; }
+    .b3 { width: 55px; height: 55px; bottom: 18%; left: 13%; animation-delay: 1.4s; }
+    .b4 { width: 86px; height: 86px; bottom: 13%; right: 10%; animation-delay: 2s; }
+
+    .sparkle {
+      position: absolute;
+      color: #fffde0;
+      font-size: clamp(22px, 2.8vw, 48px);
+      animation: twinkle 2.5s infinite ease-in-out;
+      user-select: none;
+      text-shadow: 0 3px 0 var(--main-shadow);
+    }
+
+    .s1 { top: 15%; left: 22%; animation-delay: 0s; }
+    .s2 { top: 18%; right: 24%; animation-delay: 0.6s; }
+    .s3 { bottom: 25%; left: 24%; animation-delay: 1.2s; }
+    .s4 { bottom: 23%; right: 25%; animation-delay: 1.8s; }
+
+    .time-buddy {
+      position: absolute;
+      left: clamp(18px, 4vw, 70px);
+      bottom: clamp(70px, 10vh, 135px);
+      width: clamp(120px, 16vw, 245px);
+      height: clamp(120px, 16vw, 245px);
+      z-index: 3;
+      animation: buddyBob 3.3s infinite ease-in-out;
+    }
+
+    .buddy-head {
+      position: absolute;
+      width: 72%;
+      height: 72%;
+      left: 14%;
+      top: 14%;
+      background: var(--buddy-color);
+      border: clamp(3px, 0.45vw, 7px) solid #ffffff;
+      border-radius: 48% 48% 46% 46%;
+      box-shadow: 0 10px 0 rgba(107, 69, 184, 0.20);
+      transition: background 0.55s ease;
+    }
+
+    .buddy-ear {
+      position: absolute;
+      width: 24%;
+      height: 24%;
+      top: 8%;
+      background: var(--buddy-color);
+      border: clamp(3px, 0.45vw, 7px) solid #ffffff;
+      border-radius: 50%;
+      z-index: -1;
+      transition: background 0.55s ease;
+    }
+
+    .ear-left { left: 15%; }
+    .ear-right { right: 15%; }
+
+    .buddy-face {
+      position: absolute;
+      width: 52%;
+      height: 38%;
+      left: 24%;
+      top: 38%;
+      background: #fff7c7;
+      border-radius: 50%;
+    }
+
+    .eye {
+      position: absolute;
+      width: 8%;
+      height: 8%;
+      top: 43%;
+      background: #6b45b8;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    .eye.left { left: 35%; }
+    .eye.right { right: 35%; }
+
+    .cheek {
+      position: absolute;
+      width: 10%;
+      height: 6%;
+      top: 53%;
+      background: #ff92d0;
+      border-radius: 50%;
+      opacity: 0.85;
+      z-index: 2;
+    }
+
+    .cheek.left { left: 25%; }
+    .cheek.right { right: 25%; }
+
+    .mouth {
+      position: absolute;
+      left: 47%;
+      top: 52%;
+      width: 7%;
+      height: 7%;
+      border-bottom: clamp(2px, 0.28vw, 4px) solid #6b45b8;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    .tiny-clock {
+      position: absolute;
+      width: 34%;
+      height: 34%;
+      right: 2%;
+      bottom: 10%;
+      background: #fffde0;
+      border: clamp(3px, 0.45vw, 7px) solid var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 7px 0 rgba(107, 69, 184, 0.22);
+      transition: border-color 0.55s ease;
+    }
+
+    .tiny-clock::before {
+      content: "";
+      position: absolute;
+      width: 4%;
+      height: 30%;
+      left: 48%;
+      top: 20%;
+      background: #6b45b8;
+      border-radius: 99px;
+    }
+
+    .tiny-clock::after {
+      content: "";
+      position: absolute;
+      width: 28%;
+      height: 4%;
+      left: 48%;
+      top: 48%;
+      background: #6b45b8;
+      border-radius: 99px;
+      transform-origin: left center;
+      transform: rotate(25deg);
+    }
+
+    .center-dot {
+      position: absolute;
+      width: 10%;
+      height: 10%;
+      left: 45%;
+      top: 45%;
+      background: var(--accent);
+      border-radius: 50%;
+      transition: background 0.55s ease;
+    }
+
+    .buddy-speech {
+      position: absolute;
+      left: 58%;
+      top: 0;
+      transform: rotate(-7deg);
+      background: #fffde0;
+      color: var(--accent);
+      font-size: clamp(15px, 1.7vw, 28px);
+      font-weight: 900;
+      padding: 0.55em 0.75em;
+      border-radius: 999px;
+      box-shadow: 0 6px 0 rgba(107, 69, 184, 0.22);
+      white-space: nowrap;
+      transition: color 0.55s ease;
+    }
+
+    .buddy-speech::after {
+      content: "";
+      position: absolute;
+      left: 18%;
+      bottom: -9px;
+      width: 20px;
+      height: 20px;
+      background: #fffde0;
+      transform: rotate(45deg);
+      border-radius: 4px;
+    }
+
+    .gift-stack {
+      position: absolute;
+      right: clamp(18px, 5vw, 80px);
+      bottom: clamp(80px, 12vh, 150px);
+      width: clamp(110px, 15vw, 225px);
+      height: clamp(110px, 15vw, 225px);
+      z-index: 2;
+      animation: giftBob 3.8s infinite ease-in-out;
+    }
+
+    body.day12 .gift-stack {
+      animation: giftBob 3.8s infinite ease-in-out, vanishGift 1.75s infinite ease-in-out;
+    }
+
+    .gift {
+      position: absolute;
+      border: clamp(3px, 0.4vw, 6px) solid #fffde0;
+      border-radius: 14px;
+      box-shadow: 0 8px 0 rgba(107, 69, 184, 0.22);
+    }
+
+    .gift.big {
+      width: 72%;
+      height: 50%;
+      left: 14%;
+      bottom: 0;
+      background: #ff74ad;
+    }
+
+    body.day12 .gift.big { background: #9c83ee; }
+
+    .gift.small {
+      width: 55%;
+      height: 42%;
+      left: 24%;
+      bottom: 44%;
+      background: #ffd957;
+    }
+
+    .gift::before {
+      content: "";
+      position: absolute;
+      left: 44%;
+      top: 0;
+      width: 12%;
+      height: 100%;
+      background: rgba(255, 253, 224, 0.95);
+    }
+
+    .gift::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 42%;
+      width: 100%;
+      height: 14%;
+      background: rgba(255, 253, 224, 0.95);
+    }
+
+    .ribbon {
+      position: absolute;
+      left: 35%;
+      top: -18%;
+      width: 30%;
+      height: 26%;
+      border: clamp(3px, 0.4vw, 6px) solid #fffde0;
+      border-radius: 50% 50% 10% 10%;
+      background: transparent;
+    }
+
+    .duckie {
+      position: absolute;
+      right: 20%;
+      top: -12%;
+      font-size: clamp(26px, 4vw, 58px);
+      transform: rotate(8deg);
+      filter: drop-shadow(0 5px 0 rgba(107,69,184,0.22));
+    }
+
+    .hint-dot {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 20;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(255, 253, 224, 0.16);
+      box-shadow: 0 0 10px rgba(255,255,255,0.28);
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.50; transform: scale(0.88) rotate(-5deg); }
+      50% { opacity: 1; transform: scale(1.16) rotate(6deg); }
+    }
+
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0); opacity: 0.55; }
+      50% { transform: translateY(-18px); opacity: 0.88; }
+    }
+
+    @keyframes buddyBob {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-13px) rotate(2deg); }
+    }
+
+    @keyframes giftBob {
+      0%, 100% { transform: translateY(0) rotate(2deg); }
+      50% { transform: translateY(-10px) rotate(-1deg); }
+    }
+
+    @keyframes vanishGift {
+      0%, 100% { opacity: 0.95; filter: blur(0px); }
+      50% { opacity: 0.12; filter: blur(2.4px); }
+    }
+
+    @media (max-width: 700px) {
+      #clock {
+        font-size: clamp(38px, 11vw, 80px);
+        white-space: normal;
+      }
+      .time-buddy, .gift-stack {
+        opacity: 0.42;
+        transform: scale(0.85);
+      }
+      .time-buddy { bottom: 40px; }
+      .gift-stack { bottom: 42px; }
+    }
+  </style>
+</head>
+<body class="day12">
+  <div class="wrap">
+    <div class="bubble b1"></div>
+    <div class="bubble b2"></div>
+    <div class="bubble b3"></div>
+    <div class="bubble b4"></div>
+
+    <div class="sparkle s1">✦</div>
+    <div class="sparkle s2">♡</div>
+    <div class="sparkle s3">✧</div>
+    <div class="sparkle s4">♡</div>
+
+    <div class="time-buddy" aria-hidden="true">
+      <div id="speech" class="buddy-speech">어제 재밌었지?</div>
+      <div class="buddy-ear ear-left"></div>
+      <div class="buddy-ear ear-right"></div>
+      <div class="buddy-head">
+        <div class="buddy-face"></div>
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="cheek left"></div>
+        <div class="cheek right"></div>
+        <div class="mouth"></div>
+        <div class="tiny-clock"><div class="center-dot"></div></div>
+      </div>
+    </div>
+
+    <div class="gift-stack" aria-hidden="true">
+      <div class="duckie">🐥</div>
+      <div class="gift small"><div class="ribbon"></div></div>
+      <div class="gift big"></div>
+    </div>
+
+    <div class="label">TIME COORDINATE</div>
+    <div id="clock">2026.07.12 00:00:00</div>
+    <div id="message" class="message">어제는 참 재밌었지?<br />미역국은 어제 다 먹었잖아</div>
+    <div class="heart">♡ 사라진 7월 11일 ♡</div>
+  </div>
+
+  <div class="hint-dot" aria-hidden="true"></div>
+
+  <script>
+    let currentDay = 12;
+    let lastClickTime = 0;
+
+    const state = {
+      11: {
+        className: "day11",
+        y: 2026,
+        m: 7,
+        d: 11,
+        weekday: "SAT",
+        message: "여보가 태어난 소중한 날!<br />생일 축하해~",
+        speech: "생일 도착!"
+      },
+      12: {
+        className: "day12",
+        y: 2026,
+        m: 7,
+        d: 12,
+        weekday: "SUN",
+        message: "어제는 참 재밌었지?<br />미역국은 어제 다 먹었잖아",
+        speech: "어제 재밌었지?"
+      }
+    };
+
+    function pad(n) {
+      return String(n).padStart(2, "0");
+    }
+
+    function setDay(day) {
+      currentDay = day;
+      document.body.className = state[day].className;
+      document.getElementById("message").innerHTML = state[day].message;
+      document.getElementById("speech").textContent = state[day].speech;
+      document.getElementById("clock").style.transform = "scale(1.035)";
+      setTimeout(() => {
+        document.getElementById("clock").style.transform = "scale(1)";
+      }, 180);
+      updateClock();
+    }
+
+    function toggleDay() {
+      setDay(currentDay === 11 ? 12 : 11);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const s = state[currentDay];
+
+      const y = s.y;
+      const m = pad(s.m);
+      const d = pad(s.d);
+
+      const h = pad(now.getHours());
+      const min = pad(now.getMinutes());
+      const sec = pad(now.getSeconds());
+
+      document.getElementById("clock").textContent =
+        `${y}.${m}.${d} ${h}:${min}:${sec}`;
+    }
+
+    function enterFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    }
+
+    document.addEventListener("click", () => {
+      const now = Date.now();
+
+      // 첫 클릭은 전체화면 진입, 이후 클릭은 7/11 <-> 7/12 전환.
+      if (!document.fullscreenElement) {
+        enterFullscreen();
+        return;
+      }
+
+      // 실수로 더블클릭되어 두 번 넘어가는 것 방지.
+      if (now - lastClickTime < 350) return;
+      lastClickTime = now;
+
+      toggleDay();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "1") setDay(11);
+      if (event.key === "2") setDay(12);
+      if (event.key === " " || event.key === "Enter") toggleDay();
+      if (event.key.toLowerCase() === "f") enterFullscreen();
+    });
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
