@@ -562,27 +562,25 @@
       }
     }
 
-    document.addEventListener("click", () => {
+    function safeToggle() {
       const now = Date.now();
-
-      // 첫 클릭은 전체화면 진입, 이후 클릭은 7/11 <-> 7/12 전환.
-      if (!document.fullscreenElement) {
-        enterFullscreen();
-        return;
-      }
-
-      // 실수로 더블클릭되어 두 번 넘어가는 것 방지.
-      if (now - lastClickTime < 350) return;
+      // 리모컨/터치/마우스가 중복 입력되는 것 방지.
+      if (now - lastClickTime < 450) return;
       lastClickTime = now;
-
       toggleDay();
-    });
+    }
+
+    // TV 브라우저 대응: 전체화면 여부와 상관없이 누르면 바로 전환.
+    document.addEventListener("click", safeToggle);
+    document.addEventListener("pointerup", safeToggle);
+    document.addEventListener("touchend", safeToggle);
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "1") setDay(11);
-      if (event.key === "2") setDay(12);
-      if (event.key === " " || event.key === "Enter") toggleDay();
-      if (event.key.toLowerCase() === "f") enterFullscreen();
+      const key = event.key;
+      if (key === "1") setDay(11);
+      if (key === "2") setDay(12);
+      if (key === " " || key === "Enter" || key === "OK") safeToggle();
+      if (key && key.toLowerCase && key.toLowerCase() === "f") enterFullscreen();
     });
 
     updateClock();
